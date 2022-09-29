@@ -1,5 +1,5 @@
 /**
- * @file Создание приложения и подключение промежуточных обработчиков.
+ * @file Создание приложения Express и подключение промежуточных обработчиков.
  */
 
 import cors from "cors";
@@ -29,6 +29,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+/**
+ * Создаёт игру.
+ */
 app.post("/games/", (req, res) => {
     if (typeof req.body.name !== "string"
         || !validator.matches(req.body.name, /^[a-zA-Z' \.]+$/)) {
@@ -53,10 +56,16 @@ app.post("/games/", (req, res) => {
     }
 })
 
+/**
+ * Возвращает список существующих игр.
+ */
 app.get("/games", (req, res) => {
     res.json(games);
 });
 
+/**
+ * Возвращает игру с идентификатором `gameId`.
+ */
 app.get("/games/:gameId", (req, res) => {
     const gameId = validator.toInt(req.params.gameId);
     if (gameId === NaN) {
@@ -76,19 +85,28 @@ app.get("/games/:gameId", (req, res) => {
     }
 });
 
-app.get((req, res) => {
+/**
+ * Возвращает доступные маршруты.
+ */
+app.get("/", (req, res) => {
     return res.json({
-        gamesUrl: `http://${globals.API_URI}/games/{gameId}`
+        gamesUrl: `http://${globals.API_URI}/games{/gameId}`
     });
 })
 
+/**
+ * Обработчик, который вызывается, если пользователь указал неопределенный маршрут.
+ */
 app.use((req, res) => {
     res.status(404).json({
         message: "Указанный путь не найден.",
         type: "access"
-    })
+    });
 });
 
+/**
+ * Обработчик, который вызывается при возникновении исключения.
+ */
 app.use((err, req, res, next) => {
     if (err instanceof SyntaxError) {
         res.status(422).json({
