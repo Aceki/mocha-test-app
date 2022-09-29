@@ -68,7 +68,7 @@ app.get("/games", (req, res) => {
  */
 app.get("/games/:gameId", (req, res) => {
     const gameId = validator.toInt(req.params.gameId);
-    if (gameId === NaN) {
+    if (isNaN(gameId)) {
         res.status(422).json({
             message: "Идентификатор игры должен быть числом.",
             type: "validation"
